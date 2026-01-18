@@ -48,13 +48,17 @@ export class LoginComponent implements OnInit {
     this.authService
       .login(this.f["email"].value, this.f["password"].value)
       .subscribe({
-        next: (success) => {
-          if (success) {
-            this.router.navigateByUrl(this.returnUrl);
-          }
+        next: (response) => {
+          console.log("[LoginComponent] Login bem-sucedido:", response);
+          console.log(
+            "[LoginComponent] Token salvo:",
+            this.authService.getToken(),
+          );
+          this.router.navigateByUrl(this.returnUrl);
         },
         error: (error) => {
-          this.error = error;
+          console.error("[LoginComponent] Erro ao fazer login:", error);
+          this.error = error.message || "Erro ao fazer login";
           this.loading = false;
         },
       });
