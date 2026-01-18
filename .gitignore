@@ -11,9 +11,7 @@ build/
 *.js.map
 *.js.gz
 
-# Angular
-.angular/
-.angular.cache/
+
 
 # IDE
 .vscode/
