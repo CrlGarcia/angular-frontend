@@ -1,15 +1,19 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { tap, catchError } from "rxjs/operators";
 import { throwError } from "rxjs";
 import { environment } from "../../environments/environment";
 
-export interface User {
-  id?: string;
-  email: string;
-  name?: string;
-  token?: string;
+export interface Schedule {
+  id?: number;
+  id_user?: number;
+  title: string;
+  type?: number;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+  createdAt?: string;
 }
 
 export interface scheduleRequest {
@@ -19,8 +23,7 @@ export interface scheduleRequest {
 }
 
 export interface scheduleResponse {
-  user: User;
-  token: string;
+  title: string;
 }
 
 @Injectable({
@@ -28,10 +31,21 @@ export interface scheduleResponse {
 })
 export class ScheduleService {
   private apiUrl = environment.apiUrl;
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {}
+
+  getSchedules(page: number = 1): Observable<Schedule[]> {
+    const params = new HttpParams().set("page", page.toString());
+    return this.http
+      .get<Schedule[]>(`${this.apiUrl}/schedule`, { params })
+      .pipe(
+        catchError((error) => {
+          const errorMessage =
+            error?.error?.message || "Erro ao buscar agendamentos";
+          return throwError(() => new Error(errorMessage));
+        }),
+      );
+  }
 
   register(
     id_user: number,
